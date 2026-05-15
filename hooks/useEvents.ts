@@ -14,7 +14,14 @@ export const useEvents = () => {
       setLoading(true);
       setError(null);
 
-      const data = (withFavorite ? eventService.getAllWithFavorite(userId!) : eventService.getAll()) as Event[];
+      let data;
+     
+      if(withFavorite){
+        data = await eventService.getAllWithFavorite(userId!) as Event[]
+      } else{
+        data = await eventService.getAll() as Event[]
+      }
+
       setEvents(data);
 
     } catch (err) {

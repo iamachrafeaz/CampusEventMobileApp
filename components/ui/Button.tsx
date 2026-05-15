@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
+    textAlign : "center",
     fontSize: typography.button,
     color: "#fff", // default for primary
     fontWeight: "bold",

@@ -1,8 +1,3 @@
-/**
- * CampusEvents AI Design System - Colors
- * Comprehensive color palette for the application
- */
-
 import { Platform } from "react-native";
 
 export const colors = {

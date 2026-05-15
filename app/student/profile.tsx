@@ -8,7 +8,7 @@ import { useProfileStore } from '@/store/useProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { LogOut } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 
@@ -60,7 +60,7 @@ const ProfileScreen = () => {
   };
 
   const handleSubmit = async () => {
-    if(!validateProfile()) return
+    if (!validateProfile()) return
     try {
       setIsFormDisabled(true)
       const jsonValue = JSON.stringify(profileForm);
@@ -97,9 +97,10 @@ const ProfileScreen = () => {
         />
       </View>
 
-      <View style={{
-        gap: 10
-      }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1, gap: 10 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <Input
           label={'Prénom'}
           placeholder={'Prénom'}
@@ -140,7 +141,7 @@ const ProfileScreen = () => {
           disabled={isFormDisabled}
           title='Sauvgarder'
           onPress={handleSubmit} />
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }

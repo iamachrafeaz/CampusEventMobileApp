@@ -3,8 +3,8 @@ import { db } from "./db";
 
 /* Create */
 
-export const createEvent = async (event: Event) => {
-  return await db.runAsync(
+export const createEvent = (event: Event) => {
+  return db.runAsync(
     `INSERT INTO events (
       id, title, description, category,
       startDateTime, endDateTime,
@@ -34,37 +34,13 @@ export const createEvent = async (event: Event) => {
 /* Delete */
 
 export const deleteEvent = (eventId: string) => {
-  return db.runSync('DELETE FROM events WHERE id = ?', [eventId])
+  return db.runAsync('DELETE FROM events WHERE id = ?', [eventId])
 }
 
-/* Get */
+/* Get Multiple Events */
 
-export const getAllEvents = async () => {
-  return await db.getAllAsync('SELECT * FROM events') as Event[]
-}
-
-export const getEventById = (eventId: string) => {
-  return db.getFirstSync(
-    `SELECT e.* 
-     FROM events AS e 
-     WHERE e.id = ?`,
-    [eventId]
-  ) as Event;
-};
-
-export const getEventByIdIncluseUserState = (eventId: string, userId: string) => {
-  return db.getFirstSync(
-    `SELECT e.*, 
-      CASE 
-        WHEN f.eventId IS NOT NULL THEN 1 
-        ELSE 0 
-      END as isFavorited
-     FROM events AS e 
-     LEFT JOIN favorites f 
-       ON e.id = f.eventId AND f.userId = ?
-     WHERE e.id = ?`,
-    [userId, eventId]
-  );
+export const getAllEvents = () => {
+  return db.getAllAsync('SELECT * FROM events')
 };
 
 export const getAllEventsWithFavorite = async (userId: string) => {
@@ -90,6 +66,16 @@ export const getAllEventsWithFavorite = async (userId: string) => {
   `, [userId]);
 };
 
+export const getActiveEvents = async () => {
+  return await db.getAllAsync(`
+    SELECT *
+    FROM events
+    WHERE (capacity IS NULL OR capacity > registeredCount)
+    AND startDateTime > datetime('now')
+    ORDER BY startDateTime ASC
+  `);
+};
+
 export const getFavoriteEvents = (userId: string) => {
   return db.getAllAsync(`
     SELECT e.*,
@@ -103,15 +89,32 @@ export const getFavoriteEvents = (userId: string) => {
     [userId])
 }
 
-export const getActiveEvents = async () => {
-  return await db.getAllAsync(`
-    SELECT *
-    FROM events
-    WHERE (capacity IS NULL OR capacity > registeredCount)
-    AND startDateTime > datetime('now')
-    ORDER BY startDateTime ASC
-  `);
+/* Get Single Event */
+
+export const getEventById = (eventId: string) => {
+  return db.getFirstAsync(
+    `SELECT e.* 
+     FROM events AS e 
+     WHERE e.id = ?`,
+    [eventId]
+  );
 };
+
+export const getEventByIdWithFavorite = (eventId: string, userId: string) => {
+  return db.getFirstAsync(
+    `SELECT e.*, 
+      CASE 
+        WHEN f.eventId IS NOT NULL THEN 1 
+        ELSE 0 
+      END as isFavorited
+     FROM events AS e 
+     LEFT JOIN favorites f 
+       ON e.id = f.eventId AND f.userId = ?
+     WHERE e.id = ?`,
+    [userId, eventId]
+  );
+};
+
 
 /* Update */
 
@@ -151,7 +154,7 @@ export const updateEvent = async (event: Event) => {
   );
 };
 
-export const updateEventNotification = async (event : Event, notificationId : string | null) => {
+export const updateEventNotification = async (event: Event, notificationId: string | null) => {
   await db.runAsync(`
     UPDATE events SET notificationId = ? WHERE id = ?
     `, [notificationId, event.id])

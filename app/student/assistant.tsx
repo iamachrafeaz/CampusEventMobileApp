@@ -6,17 +6,17 @@ import { ChatBuble } from '@/components/ChatBubble'
 import TextShimmer from '@/components/TextShimmer'
 import { MarkdownStyles } from '@/constants/markdownStyles'
 import { colors } from "@/constants/theme"
-import { LLMRole } from '@/constants/types'
 import { typography } from "@/constants/typography"
 import { askAI } from '@/services/assistantService'
+import { LLMRole } from '@/types/LLMRole'
 import React, { useRef, useState } from 'react'
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native'
 import Markdown from "react-native-markdown-display"
 import { SafeAreaView } from 'react-native-safe-area-context'

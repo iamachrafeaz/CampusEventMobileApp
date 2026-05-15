@@ -8,8 +8,10 @@ import { invalidateEvents } from '@/store/useEventStore'
 import { useRegistrationStore } from '@/store/useRegistrationStore'
 import { useFocusEffect } from 'expo-router'
 import React, { useCallback } from 'react'
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native'
+// Added Alert here
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
 
 const RegistrationsScreen = () => {
   const user = useAuthStore(s => s.user);
@@ -23,11 +25,9 @@ const RegistrationsScreen = () => {
 
   const { unregister } = useRegister();
 
-  const cancelRegistration = async (registration: Registration) => {
-    // 1. Keep track of the original state in case of failure
+  const performCancellation = async (registration: Registration) => {
     const previousRegistrations = [...registrations];
 
-    // 2. Optimistic Update: Toggle status locally
     const updatedData = registrations.map(r =>
       r.id === registration.id
         ? { ...r, status: r.status === "confirmed" ? "cancelled" : "confirmed" }
@@ -40,17 +40,42 @@ const RegistrationsScreen = () => {
       if (!res) throw new Error("API Update failed");
 
       invalidateEvents(user!);
+     
+      Toast.show({
+        type: "success",
+        text1: "Inscription annulée avec succès"
+      })
     } catch (error) {
-      // 3. Rollback: If API fails, revert to previous data
       setRegistrations(previousRegistrations);
-      // Optional: Add a Toast or Alert here to notify the user
+      
+      Toast.show({
+        type: "error",
+        text1: "Erreur lors de l'annulation"
+      })
     }
   };
- 
+
+  const cancelRegistration = (registration: Registration) => {
+    Alert.alert(
+      "Confirmer l'annulation",
+      "Voulez-vous vraiment annuler votre inscription ? Une fois annulée, vous ne pourrez plus vous réinscrire à cet événement.",
+      [
+        {
+          text: "Annuler",
+          style: "cancel"
+        },
+        { 
+          text: "Confirmer l'annulation", 
+          onPress: () => performCancellation(registration),
+          style: "destructive" 
+        }
+      ]
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       if (!user) return;
-
       fetchRegistrations(user);
     }, [])
   );
@@ -75,7 +100,10 @@ const RegistrationsScreen = () => {
             </View>
           }
           renderItem={({ item }) => (
-            <RegistrationCard registration={item} onCancel={() => cancelRegistration(item)} />
+            <RegistrationCard 
+              registration={item} 
+              onCancel={() => cancelRegistration(item)} 
+            />
           )}
         />
       )}

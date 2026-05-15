@@ -21,6 +21,7 @@ import {
   Text,
   View
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 const EventDetails = () => {
   const router = useRouter()
@@ -29,10 +30,10 @@ const EventDetails = () => {
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const { userType, user } = useAuthStore();
-  
-  const { register } = useRegister()
+
+  const { register, registerLoading } = useRegister()
 
   const {
     favorite
@@ -40,7 +41,7 @@ const EventDetails = () => {
 
   const registrations = useRegistrationStore(s => s.registrations)
 
-  const isRegistered = registrations.some(
+  const registeration = registrations.find(
     r => r.eventId === id && r.userId === user!
   )
 
@@ -62,10 +63,14 @@ const EventDetails = () => {
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        const data = await eventService.getOneById(id as string, user!) as Event;
+        const data = await eventService.getById(id as string, user!) as Event;
         setEvent(data)
       } catch (error) {
         console.error(error);
+        Toast.show({
+          type: "error",
+          text1: "Événement non trouvé!"
+        })
       } finally {
         setLoading(false);
       }
@@ -77,6 +82,14 @@ const EventDetails = () => {
   if (loading) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <View style={{
+          position: "absolute",
+          top: 50,
+          left: 20,
+          zIndex: 10,
+        }}>
+          <BackButton onPress={() => router.back()} />
+        </View>
         <ActivityIndicator size="large" color={colors.primary.main} />
       </View>
     );
@@ -85,6 +98,14 @@ const EventDetails = () => {
   if (!event) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+        <View style={{
+          position: "absolute",
+          top: 50,
+          left: 20,
+          zIndex: 10,
+        }}>
+          <BackButton onPress={() => router.back()} />
+        </View>
         <AlertCircle size={48} color={colors.text.secondary} />
         <Text style={[styles.title, { marginTop: 10 }]}>Événement introuvable</Text>
         <Text style={styles.description}>Cet événement n'existe plus ou a été supprimé.</Text>
@@ -177,11 +198,19 @@ const EventDetails = () => {
 
       {userType == "STUDENT" && <View style={styles.bottomBar}>
         <View style={{ flex: 1 }}>
-          <Button
-            disabled={isDisabled || isRegistered}
+          {!registeration && <Button
+            disabled={isDisabled || registerLoading}
             onPress={() => {
               register(event.id, user!)
-            }} title="S'inscrire" />
+            }}
+            title={"S'inscrire"} />
+          }
+
+          {registeration && <Button
+            disabled={true}
+            onPress={() => {}}
+            title={registeration.status == "confirmed" ? "Déjà inscrit" : "Annulé"} />
+          }
         </View>
 
         <View style={{ flex: 1 }}>

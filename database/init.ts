@@ -1,5 +1,5 @@
-import { EventCategory } from '@/constants/eventCategory';
 import { notificationService } from '@/services/notificationService';
+import { EventCategory } from '@/types/EventCategory';
 import { db } from './db';
 import { createEvent, updateEventNotification } from './events';
 
@@ -171,7 +171,7 @@ const events = [
       "Apprenez les patterns avancés de React Native avec Expo Router et Zustand.",
     category: "Workshop" as EventCategory,
     startDateTime: "2026-06-04T20:24:49.183Z",
-    endDateTime: "2026-04-22T21:24:00.000Z",
+    endDateTime: "2026-06-04T21:24:00.000Z",
     locationName: "Salle B12",
     locationAddress: "Campus Universitaire, Tanger",
     organizerName: "Club Informatique ENSA",

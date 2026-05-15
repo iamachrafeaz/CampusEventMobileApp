@@ -11,9 +11,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const FavoriteScreen = () => {
   const [favoriteEvents, setFavoriteEvents] = useState<Event[]>([])
+  
   const router = useRouter()
 
-  const { events, fetchEvents, loading: eventsLoading, setEvents } = useEventStore();
+  const { events, loading: eventsLoading, setEvents } = useEventStore();
 
   const {
     favorite,

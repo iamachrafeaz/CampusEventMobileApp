@@ -1,15 +1,15 @@
-import { LLMRole } from "@/constants/types";
 import { getActiveEvents, getFavoriteEvents } from "@/database/events";
 import { getMyRegistrations } from "@/database/registrations";
 import { Event } from "@/models/event";
 import { useAuthStore } from "@/store/useAuthStore";
+import { LLMRole } from "@/types/LLMRole";
 import Groq from "groq-sdk";
 import { planPrompt } from "./prompts/plan.prompt";
 import { qaPrompt } from "./prompts/qa.prompt";
 import { recommendPrompt } from "./prompts/recommend.prompt";
 import { searchPrompt } from "./prompts/search.prompt";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = new Groq({ apiKey: process.env.EXPO_PUBLIC_GROQ_API_KEY });
 
 
 const getUpcomingEvent = async () => {

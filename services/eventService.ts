@@ -1,38 +1,31 @@
+import { EventForm } from '@/types/EventForm';
 import * as Crypto from 'expo-crypto';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from "expo-sharing";
 import * as repo from "../database/events";
 import { Event } from "../models/event";
 
-type EventCategory = Event["category"];
-
-type EventForm = {
-  title: string;
-  locationName: string;
-  organizerName?: string;
-  capacity?: string;
-  description: string;
-  category: EventCategory | null;
-  startDateTime: Date | null;
-  endDateTime: Date | null;
-  locationAddress: string;
-  imageUrl: string;
-  tags: string[];
-};
-
 
 export const eventService = {
-  getAll: () => repo.getAllEvents(),
+  getAll: async () => {
+    return await repo.getAllEvents() as Event[]
+  },
 
-  getAllWithFavorite: async (userId: string) => await repo.getAllEventsWithFavorite(userId),
+  getAllWithFavorite: async (userId: string) => {
+    return await repo.getAllEventsWithFavorite(userId) as Event[]
+  },
 
-  getOneById: (id: string, userId: string | null = null) => {
+  getFavoriteEvents: async (userId: string) => {
+    return await repo.getFavoriteEvents(userId) as Event[]
+  },
+
+  getById: async (id: string, userId: string | null = null) => {
     let event: Event;
+    
     if (userId) {
-      event = repo.getEventByIdIncluseUserState(id, userId) as Event
-    }
-    else {
-      event = repo.getEventById(id) as Event
+      event = await repo.getEventByIdWithFavorite(id, userId) as Event
+    } else {
+      event = await repo.getEventById(id) as Event
     }
 
     if (event.tags) {
@@ -89,7 +82,7 @@ export const eventService = {
     image: string | null,
     isImageDeleted: boolean
   ) => {
-    const originalEvent = repo.getEventById(id);
+    const originalEvent = await repo.getEventById(id) as Event;
 
     if (!originalEvent) {
       throw new Error("Event not found");
@@ -139,8 +132,6 @@ export const eventService = {
 
   delete: (id: string) => repo.deleteEvent(id),
 
-  getFavoriteEvents: (userId: string) => repo.getFavoriteEvents(userId),
-
   exportEvents: async () => {
     try {
       const events = await repo.getAllEvents();
@@ -152,7 +143,8 @@ export const eventService = {
 
       await Sharing.shareAsync(file.uri);
     } catch (error) {
-      console.log("Export error:", error);
+      console.error("Export error:", error);
+      throw new Error("Erreur lors l'exportation des données")
     }
   }
 };

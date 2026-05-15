@@ -3,10 +3,10 @@ import Input from '@/components/ui/Input';
 import RadioButton from '@/components/ui/RadioButton';
 import { colors } from '@/constants/theme';
 import { typography } from '@/constants/typography';
-import { UserType } from '@/constants/userType';
 import { loginService } from '@/services/loginService';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useProfileStore } from '@/store/useProfile';
+import { UserType } from '@/types/UserType';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -21,10 +21,16 @@ type LoginForm = {
   password: FieldState;
 };
 
+// const INITIAL_FORM: LoginForm = {
+//   userType: "ADMIN",
+//   email: { value: "admin@campus.ma", error: null },
+//   password: { value: "admin123", error: null },
+// };
+
 const INITIAL_FORM: LoginForm = {
   userType: "STUDENT",
-  email: { value: "etudiant@campus.ma", error: null },
-  password: { value: "etudiant123", error: null },
+  email: { value: "", error: null },
+  password: { value: "", error: null },
 };
 
 export default function LoginScreen() {
@@ -132,6 +138,7 @@ export default function LoginScreen() {
           value={form.password.value}
           onChangeText={(val) => setField("password", val)}
           error={form.password.error}
+          secureTextEntry={true}
         />
         <Button title="Se connecter" onPress={submit} />
       </View>

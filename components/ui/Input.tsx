@@ -10,14 +10,16 @@ const Input = ({
     value,
     onChangeText,
     error,
-    keyboardType
+    keyboardType,
+    secureTextEntry = false
 }: {
     label: string;
     placeholder: string;
     value: string;
     onChangeText: (text: string) => void;
     error?: string | null;
-    keyboardType?: KeyboardTypeOptions
+    keyboardType?: KeyboardTypeOptions;
+    secureTextEntry? : boolean
 }) => {
     return (
         <View style={styles.container}>
@@ -28,6 +30,7 @@ const Input = ({
                 style={[styles.input, error && styles.inputError]}
                 placeholder={placeholder}
                 value={value}
+                secureTextEntry={secureTextEntry}
                 placeholderTextColor={colors.text.secondary}
                 onChangeText={onChangeText}
             />

@@ -1,4 +1,4 @@
-import { UserType } from "@/constants/userType";
+import { UserType } from "@/types/UserType";
 import { create } from "zustand";
 
 type AuthState = {

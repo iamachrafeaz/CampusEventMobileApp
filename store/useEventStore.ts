@@ -20,7 +20,9 @@ export const useEventStore = create<EventStore>((set) => ({
         try {
             const data = await eventService.getAllWithFavorite(userId) as Event[];
             set({ events: data });
-        } catch(e){console.log(e)}finally {
+        } catch(e){
+            console.error(e)
+        } finally {
             set({ loading: false });
         }
     },

@@ -1,5 +1,6 @@
 import BackButton from '@/components/BackButton';
 import ImagePickerInput from '@/components/ImagePickerInput';
+import LoadingModal from '@/components/LoadingModal';
 import Button from '@/components/ui/Button';
 import DatePicker from '@/components/ui/DatePicker';
 import Input from '@/components/ui/Input';
@@ -9,32 +10,14 @@ import TextArea from '@/components/ui/TextArea';
 import { EventCategories } from '@/constants/eventCategory';
 import { colors } from '@/constants/theme';
 import { typography } from '@/constants/typography';
-import { Event } from "@/models/event";
 import { eventService } from "@/services/eventService";
+import { EventForm } from '@/types/EventForm';
+import { EventFormErrors } from '@/types/EventFormErrors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-
-
-type EventCategory = Event["category"];
-
-type EventForm = {
-    title: string;
-    locationName: string;
-    organizerName?: string;
-    capacity?: string;
-    description: string;
-    category: EventCategory | null;
-    startDateTime: Date | null;
-    endDateTime: Date | null;
-    locationAddress: string;
-    imageUrl: string;
-    tags: string[];
-};
-
-type FormErrors = Partial<Record<keyof EventForm, string>>
 
 const initialForm: EventForm = {
     title: "",
@@ -50,16 +33,16 @@ const initialForm: EventForm = {
     tags: [],
 };
 
-export default function EventForm() {
+export default function EventFormScreen() {
     const { id } = useLocalSearchParams();
     const router = useRouter()
 
     const [form, setForm] = useState<EventForm>(initialForm);
-    const [errors, setErrors] = useState<FormErrors>({});
+    const [errors, setErrors] = useState<EventFormErrors>({});
     const [image, setImage] = useState<string | null>(null);
     const [isImageDeleted, setIsDeleted] = useState(false)
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const setField = <K extends keyof EventForm>(
         field: K,
@@ -79,7 +62,7 @@ export default function EventForm() {
     };
 
     const validate = (): boolean => {
-        const newErrors: FormErrors = {};
+        const newErrors: EventFormErrors = {};
 
         if (!form.title.trim()) {
             newErrors.title = "Le titre est obligatoire";
@@ -135,7 +118,7 @@ export default function EventForm() {
         if (!validate()) return;
 
         try {
-            setLoading(true);
+            setIsLoading(true);
 
             if (id) {
                 await eventService.update(id as string, form, image, isImageDeleted);
@@ -154,9 +137,14 @@ export default function EventForm() {
             reset();
             router.back();
         } catch (error) {
-            console.error("Erreur lors de la création:", error);
+
+            Toast.show({
+                type : "error",
+                text1: `Erreur lors la ${id ? "modification" : "création"} de l'événements.`
+            })
+            console.error("Erreur :", error);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -164,35 +152,34 @@ export default function EventForm() {
         setField(field, value);
     };
 
-    const fetchEvent = async () => {
-        try {
-            setLoading(true);
-            const data = await eventService.getOneById(id as string);
-
-            setForm({
-                title: data.title,
-                locationName: data.locationName,
-                organizerName: data.organizerName,
-                capacity: data.capacity?.toString() || "",
-                description: data.description,
-                category: data.category,
-                startDateTime: new Date(data.startDateTime),
-                endDateTime: data.endDateTime ? new Date(data.endDateTime) : null,
-                locationAddress: data.locationAddress || "",
-                imageUrl: data.imageUrl || "",
-                tags: data.tags || [],
-
-            })
-
-            setImage(data.imageUrl || null)
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchEvent = async () => {
+            try {
+                setIsLoading(true);
+                const data = await eventService.getById(id as string);
+
+                setForm({
+                    title: data.title,
+                    locationName: data.locationName,
+                    organizerName: data.organizerName,
+                    capacity: data.capacity?.toString() || "",
+                    description: data.description,
+                    category: data.category,
+                    startDateTime: new Date(data.startDateTime),
+                    endDateTime: data.endDateTime ? new Date(data.endDateTime) : null,
+                    locationAddress: data.locationAddress || "",
+                    imageUrl: data.imageUrl || "",
+                    tags: data.tags || [],
+
+                })
+
+                setImage(data.imageUrl || null)
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
         if (id) fetchEvent();
     }, []);
 
@@ -209,6 +196,8 @@ export default function EventForm() {
                     contentContainerStyle={{ paddingBottom: 40 }}
                     showsVerticalScrollIndicator={false}
                 >
+                    <LoadingModal isVisible={isLoading} text="Patientez s'il vous plaît..." />
+
                     <View style={{
                         flexDirection: "row",
                         gap: 10,
@@ -218,6 +207,9 @@ export default function EventForm() {
                         <BackButton onPress={() => router.back()} />
                         <Text style={styles.title}>{id ? "Modifier" : "Nouvel"} événement</Text>
                     </View>
+
+                    {isLoading && <View>
+                    </View>}
 
                     <View style={styles.form}>
 
@@ -318,6 +310,7 @@ export default function EventForm() {
                 </ScrollView>
             </KeyboardAvoidingView >
             <Button
+                disabled={isLoading}
                 onPress={handleSubmit}
                 title='Enregistrer'
                 style={{ marginTop: 10 }}

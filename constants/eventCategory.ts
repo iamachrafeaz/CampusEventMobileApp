@@ -5,5 +5,3 @@ export const EventCategories = [
   "Exam",
   "Other",
 ] as const;
-
-export type EventCategory = (typeof EventCategories)[number];

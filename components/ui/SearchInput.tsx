@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.ui.borderDark,
         borderRadius: 12,
-        padding: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 15,
         gap: 8,
     },
     icon: {

@@ -1,5 +1,5 @@
 import { STATIC_CREDENTIALS } from "@/constants/credentials";
-import { UserType } from "@/constants/userType";
+import { UserType } from "@/types/UserType";
 
 type LoginResult = { success: true } | { success: false; error: string };
 

@@ -1,4 +1,4 @@
-import { getEventByIdIncluseUserState, updateRegisteredCount } from "@/database/events";
+import { getEventByIdWithFavorite, updateRegisteredCount } from "@/database/events";
 import * as repo from "@/database/registrations";
 import { Event } from "@/models/event";
 
@@ -7,7 +7,7 @@ export const registrationService = {
         let result
 
         try {
-            const event = await getEventByIdIncluseUserState(eventId, userId) as Event
+            const event = await getEventByIdWithFavorite(eventId, userId) as Event
 
             const isFull =
                 event.capacity != null &&

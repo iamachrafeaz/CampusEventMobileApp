@@ -1,15 +1,15 @@
 import { colors } from "@/constants/theme";
 import DateTimePicker, {
-    DateTimePickerEvent,
+  DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import {
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 type Props = {
@@ -26,14 +26,29 @@ export default function DateTimeModal({
   initialDate,
 }: Props) {
   const [date, setDate] = useState(initialDate ?? new Date());
+  const [androidStep, setAndroidStep] = useState<"date" | "time">("date");
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    // Android closes immediately on selection, iOS stays open
     if (Platform.OS === "android") {
-      if (event.type === "set" && selectedDate) {
-        onConfirm(selectedDate);
+      if (event.type === "dismissed") {
+        setAndroidStep("date");
+        onClose();
+        return;
       }
-      onClose();
+
+      if (event.type === "set" && selectedDate) {
+        if (androidStep === "date") {
+          setDate(selectedDate);
+          setAndroidStep("time");
+        } else {
+          const finalDate = new Date(date);
+          finalDate.setHours(selectedDate.getHours());
+          finalDate.setMinutes(selectedDate.getMinutes());
+          setAndroidStep("date"); 
+          onConfirm(finalDate);
+          onClose();
+        }
+      }
     } else {
       if (selectedDate) setDate(selectedDate);
     }
@@ -44,15 +59,28 @@ export default function DateTimeModal({
     onClose();
   };
 
+  if (Platform.OS === "android") {
+    if (!visible) return null;
+    return (
+      <DateTimePicker
+        value={date}
+        mode={androidStep}
+        display="default"
+        onChange={handleChange}
+        accentColor={colors.primary.main}
+      />
+    );
+  }
+
   return (
     <Modal
       transparent
       animationType="fade"
       visible={visible}
       onRequestClose={onClose}
+      onDismiss={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        {/* StopPropagation by wrapping inner content in a Pressable with no action */}
         <Pressable style={styles.container} onPress={(e) => e.stopPropagation()}>
           <View style={styles.header}>
             <Text style={styles.title}>Select Date & Time</Text>
@@ -63,31 +91,28 @@ export default function DateTimeModal({
             <DateTimePicker
               value={date}
               mode="datetime"
-              display={"default"}
+              display="spinner"
               onChange={handleChange}
               textColor={colors.text.primary}
               accentColor={colors.primary.main}
             />
           </View>
 
-          {/* iOS needs explicit Action Buttons; Android usually handles it via its native dialog */}
-          {Platform.OS === "ios" && (
-            <View style={styles.actions}>
-              <Pressable 
-                onPress={onClose} 
-                style={[styles.btn, styles.secondaryBtn]}
-              >
-                <Text style={styles.secondaryBtnText}>Cancel</Text>
-              </Pressable>
+          <View style={styles.actions}>
+            <Pressable
+              onPress={onClose}
+              style={[styles.btn, styles.secondaryBtn]}
+            >
+              <Text style={styles.secondaryBtnText}>Cancel</Text>
+            </Pressable>
 
-              <Pressable
-                onPress={handleConfirmIOS}
-                style={[styles.btn, styles.confirmBtn]}
-              >
-                <Text style={styles.confirmBtnText}>Done</Text>
-              </Pressable>
-            </View>
-          )}
+            <Pressable
+              onPress={handleConfirmIOS}
+              style={[styles.btn, styles.confirmBtn]}
+            >
+              <Text style={styles.confirmBtnText}>Done</Text>
+            </Pressable>
+          </View>
         </Pressable>
       </Pressable>
     </Modal>
@@ -98,7 +123,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: colors.ui.overlay,
-    justifyContent: "flex-end", // Slide up from bottom feel
+    justifyContent: "flex-end",
     padding: 16,
   },
   container: {
@@ -110,7 +135,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 10,
-    marginBottom: Platform.OS === 'ios' ? 30 : 0,
+    marginBottom: 30,
   },
   header: {
     marginBottom: 16,
@@ -130,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ui.backgroundAlt,
     borderRadius: 12,
     overflow: "hidden",
-    alignItems : "center",
+    alignItems: "center",
     paddingVertical: 10,
   },
   actions: {

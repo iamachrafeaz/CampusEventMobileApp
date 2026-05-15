@@ -1,4 +1,5 @@
 import EventItem from '@/components/EventItem';
+import LoadingModal from '@/components/LoadingModal';
 import Button from '@/components/ui/Button';
 import { colors } from '@/constants/theme';
 import { typography } from '@/constants/typography';
@@ -7,7 +8,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useRouter } from 'expo-router';
 import { Calendar, LogOut, Plus, Share2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { Event } from "../../models/event";
@@ -18,12 +19,12 @@ export default function EventList() {
   const { logout } = useAuthStore()
 
   const [events, setEvents] = useState<Event[]>([]);
-  const [exporting, setExporting] = useState(false);
 
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleEdit = (id: string) => {
     router.push({
-      pathname: "/admin/eventForm",
+      pathname: "/admin/eventFormScreen",
       params: {
         id: id
       }
@@ -44,7 +45,7 @@ export default function EventList() {
 
   const handleExport = async () => {
     try {
-      setExporting(true);
+      setIsExporting(true);
       await eventService.exportEvents();
 
       Toast.show({
@@ -55,7 +56,7 @@ export default function EventList() {
         text1: "Erreur lors de l'export"
       });
     } finally {
-      setExporting(false);
+      setIsExporting(false);
     }
   };
 
@@ -70,18 +71,7 @@ export default function EventList() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Modal
-        visible={exporting}
-        transparent
-        animationType="fade"
-      >
-        <View style={styles.loadingOverlay}>
-          <View style={styles.loadingBox}>
-            <ActivityIndicator size="large" color={colors.primary.main} />
-            <Text style={styles.loadingText}>Export en cours...</Text>
-          </View>
-        </View>
-      </Modal>
+     <LoadingModal text={'Exportation en cours...'} isVisible={isExporting} />
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Événements</Text>
@@ -97,7 +87,7 @@ export default function EventList() {
       <View style={styles.actionSection}>
         <View style={{ flex: 1 }}>
           <Button
-            onPress={() => { router.push("/admin/eventForm") }}
+            onPress={() => { router.push("/admin/eventFormScreen") }}
             icon={<Plus size={18} color={"white"} />}
             title={'Créer un événement'}
           />
@@ -215,23 +205,4 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: '600',
   },
-  loadingOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingBox: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 12,
-    alignItems: "center",
-    minWidth: 160,
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-  }
 });

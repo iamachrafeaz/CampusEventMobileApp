@@ -14,7 +14,7 @@ export default function AdminLayout() {
     <SafeAreaProvider>
       <Stack>
         <Stack.Screen name="home" options={{ headerShown: false }} />
-        <Stack.Screen name="eventForm" options={{ headerShown: false }} />
+        <Stack.Screen name="eventFormScreen" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaProvider>
 
