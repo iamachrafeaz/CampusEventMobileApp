@@ -118,7 +118,7 @@ const getSizeStyle = (size: Size) => {
     case "lg":
       return {
         paddingVertical: 18,
-        paddingHorizontal: 20,
+        paddingHorizontal: 18,
         borderRadius: 12,
       };
 
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   title: {
     textAlign : "center",
     fontSize: typography.button,
-    color: "#fff", // default for primary
+    color: "#fff",
     fontWeight: "bold",
   },
 

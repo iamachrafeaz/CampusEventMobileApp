@@ -201,7 +201,7 @@ const events = [
 ];
 
 
-export function initDatabase() {
+export async function initDatabase() {
   db.execSync('PRAGMA foreign_keys = ON;');
 
   db.execSync(`
@@ -251,20 +251,23 @@ export function initDatabase() {
     );
   `)
 
-  const countResult = db.getFirstSync<{ count: number }>('SELECT COUNT(*) as count FROM events;');
+  const countResult = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM events;');
 
   if (countResult?.count === 0) {
-    seedDatabase();
+    await seedDatabase();
   }
 }
-
-const seedDatabase = () => {
-  events.forEach(async (event) => {
+const seedDatabase = async () => {
+  for (const event of events) {
     const savedEvent = await createEvent(event);
 
-    const notificationId = await notificationService.scheduleEventNotification(event);
+    const notificationId =
+      await notificationService.scheduleEventNotification(event);
 
-    await updateEventNotification({ ...event, id: savedEvent.lastInsertRowId.toString() }, notificationId)
-  })
-}
+    await updateEventNotification(
+      { ...event, id: savedEvent.lastInsertRowId.toString() },
+      notificationId
+    );
+  }
+};
 

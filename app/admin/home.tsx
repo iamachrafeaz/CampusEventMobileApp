@@ -5,20 +5,20 @@ import { colors } from '@/constants/theme';
 import { typography } from '@/constants/typography';
 import { eventService } from '@/services/eventService';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useRouter } from 'expo-router';
+import { useEventStore } from '@/store/useEventStore';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Calendar, LogOut, Plus, Share2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import { Event } from "../../models/event";
 
 export default function EventList() {
 
   const router = useRouter();
   const { logout } = useAuthStore()
 
-  const [events, setEvents] = useState<Event[]>([]);
+  const { events, fetchEvents, loading } = useEventStore()
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -31,8 +31,10 @@ export default function EventList() {
     })
   }
 
-  const handleDelete = (id: string) => {
-    eventService.delete(id)
+  const handleDelete = async (id: string) => {
+    await eventService.delete(id)
+    fetchEvents(null);
+
     Toast.show({
       text1: "Évenement supprimé avec succéss"
     })
@@ -60,18 +62,18 @@ export default function EventList() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await eventService.getAll()
-      setEvents(data)
-    }
-
-    fetchData()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents(null);
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-     <LoadingModal text={'Exportation en cours...'} isVisible={isExporting} />
+      <LoadingModal text={'Exportation en cours...'} isVisible={isExporting} />
+     
+      <LoadingModal text={'Chargement en cours...'} isVisible={loading} />
+
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Événements</Text>
