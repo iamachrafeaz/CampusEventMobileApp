@@ -1,24 +1,38 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { toastConfig } from '@/config/ToastConfig';
+import { initDatabase } from '@/database/init';
+import { notificationService } from '@/services/notificationService';
+import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+  useEffect(() => {
+    initDatabase();
+    notificationService.requestPermissions()
+  }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+    <SafeAreaProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="admin" />
+        <Stack.Screen name="student" />
+        <Stack.Screen name="auth" />
+        <Stack.Screen name="events/[id]" options={{ headerShown: false }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <Toast config={toastConfig} />
+    </SafeAreaProvider>
   );
 }
