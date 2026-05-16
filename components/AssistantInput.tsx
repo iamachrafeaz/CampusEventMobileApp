@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 
 const AssistantInput = (
-  { currentMessage, setCurrentMessage, onSendMessage }:
-    { currentMessage: string, setCurrentMessage: (val: string) => void, onSendMessage : () => void }) => {
+  { currentMessage, setCurrentMessage, onSendMessage, disabled }:
+    { currentMessage: string, disabled: boolean, setCurrentMessage: (val: string) => void, onSendMessage : () => void }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const roles = [
@@ -37,7 +37,7 @@ const AssistantInput = (
         <TouchableOpacity
           style={[styles.sendButton, !currentMessage.trim() && styles.disabledSend]}
           onPress={onSendMessage}
-          disabled={!currentMessage.trim()}
+          disabled={!currentMessage.trim() || disabled}
         >
           <Send color="#fff" size={16} />
         </TouchableOpacity>

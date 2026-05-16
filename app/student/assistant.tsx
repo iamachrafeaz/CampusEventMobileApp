@@ -116,6 +116,7 @@ const AssistantScreen = () => {
 
         {/* Input */}
         <AssistantInput
+          disabled={loading}
           currentMessage={currentMessage}
           setCurrentMessage={setCurrentMessage}
           onSendMessage={onSendMessage}
