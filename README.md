@@ -39,7 +39,7 @@ The app also integrates AI-powered assistant features for improved search, recom
 
 ### Authentication
 
-- `app/auth/login.tsx` — user login flow and authentication state management
+- `app/auth/login.tsx` — user login flow and authentication state management.
 
 ### Student Experience
 
@@ -95,3 +95,13 @@ Then open the app in Expo Go on a device or emulator.
 - `![Home Screen](./screenshots/home.png)`
 - `![Event Detail](./screenshots/event-detail.png)`
 - `![Admin Event Form](./screenshots/admin-event-form.png)`
+##  Licence
+
+Ce projet est sous licence **MIT** — contacter  [EL AZZOUZI Achraf](mailto:achraf0el7azzouzi@gmail.com) ou [Mohamed Iliass Kaddar](mailto:moahmediliassk@gmail.com) . pour plus de détails.
+
+---
+
+<div align="center">
+  <strong>Réalisé dans le cadre d’un projet académique de développement mobile</strong><br>
+  Expo · React Native · TypeScript · SQLite · Zustand · AI Assistant Integration · Mobile-First Architecture
+</div>
