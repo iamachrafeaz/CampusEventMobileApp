@@ -4,13 +4,13 @@ import { Event } from "@/models/event";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LLMRole } from "@/types/LLMRole";
 import Groq from "groq-sdk";
+import { basePrompt } from "./prompts/base.prompt";
 import { planPrompt } from "./prompts/plan.prompt";
 import { qaPrompt } from "./prompts/qa.prompt";
 import { recommendPrompt } from "./prompts/recommend.prompt";
 import { searchPrompt } from "./prompts/search.prompt";
 
 const groq = new Groq({ apiKey: process.env.EXPO_PUBLIC_GROQ_API_KEY });
-
 
 const getUpcomingEvent = async () => {
     return await getActiveEvents() as Event[];
@@ -32,9 +32,9 @@ const getUserRegisteredEvents = async () => {
     return await getMyRegistrations(user) as Event[];
 };
 
-const buildQAPrompt = async (question : string): Promise<string> => {
+const buildQAPrompt = async (question: string): Promise<string> => {
     const events = await getUpcomingEvent()
-    return qaPrompt(question,events)
+    return qaPrompt(question, events)
 }
 
 const buildSearchPrompt = async (): Promise<string> => {
@@ -42,9 +42,9 @@ const buildSearchPrompt = async (): Promise<string> => {
     return searchPrompt(events)
 }
 
-const buildPlanPrompt = async (question : string): Promise<string> => {
+const buildPlanPrompt = async (question: string): Promise<string> => {
     const events = await getUpcomingEvent()
-    return planPrompt(question,events)
+    return planPrompt(question, events)
 }
 
 const buildRecommendPrompt = async (): Promise<string> => {
@@ -104,15 +104,20 @@ const callLlm = async (system: string, user: string): Promise<string> => {
     return content;
 }
 
-export const askAI = async (question: string, role: LLMRole): Promise<string> => {
-    const { system, user } = await buildPrompt(question, role);
-
+export const askAI = async (question: string): Promise<{ role: LLMRole, answer: string }> => {
     try {
-        const answer = await callLlm(system, user);
+        const classification_string = await callLlm(basePrompt(), question);
 
-        return answer;
+        const classification: { type: LLMRole } = JSON.parse(classification_string)
+
+        const { system, user } = await buildPrompt(question, classification.type);
+
+        const answer = await callLlm(system, user);
+      
+        return { role: classification.type, answer: answer };
+        
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`askAI failed [role=${role}]: ${message}`);
+        throw new Error(`askAI failed : ${message}`);
     }
 }

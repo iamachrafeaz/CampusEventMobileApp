@@ -27,6 +27,7 @@ export const qaPrompt = (userQuery: string, upcomingEvents: Event[]) => {
       - Une brève explication (1 phrase) de pourquoi l'événement est pertinent.
    
    4. Sécurité & Limites :
+      - Si tu trouves plus que 5 des events correspendant à la demande d'utilisateur, retourne que 5.
       - Si la question est hors-sujet (pas liée aux événements ou à la vie étudiante) : Réponds poliment que tu es là uniquement pour guider l'étudiant dans le catalogue universitaire.
       - Si aucun événement ne correspond : "Désolé, je n'ai pas trouvé d'événements correspondant à cette recherche pour le moment. N'hésite pas à reformuler ta question !"
    

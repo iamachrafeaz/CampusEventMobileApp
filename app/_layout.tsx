@@ -9,7 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
-
+  
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: true,
@@ -18,6 +18,7 @@ export default function RootLayout() {
       shouldShowList: true,
     }),
   });
+
   useEffect(() => {
     initDatabase();
     notificationService.requestPermissions()

@@ -23,12 +23,15 @@ export const searchPrompt = (upcomingEvents: Event[]) => {
    4. Sécurité :
       - Si la requête n’est PAS liée aux événements universitaires -> retourne :
         {"error": "Désolé, je suis programmé uniquement pour vous aider à trouver des événements universitaires !"}
-   
+      
+      - Si les données sont insuffisantes ou si aucun événement pertinent n’existe :
+         retourner -> [] dans content et une opening et closing indiquant qu'il y n'a pas des events
+
    5. Format :
       - Réponse STRICTEMENT en JSON valide
       - Aucun texte en dehors du JSON
-      - Format JSON -> [{"id", "title", "date", "time", "location", "justification"}]
-   
+      - FORMAT DE SORTIE -> {"opening","content" : [{"id", "title", "date", "time", "location", "justification"}], "closing"}
+
    6. Justification :
       - Courte, naturelle, dynamique
       - Explique clairement le lien avec la demande

@@ -11,38 +11,48 @@ import { askAI } from '@/services/assistantService'
 import { LLMRole } from '@/types/LLMRole'
 import React, { useRef, useState } from 'react'
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native'
 import Markdown from "react-native-markdown-display"
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 const AssistantScreen = () => {
-  const [messages, setMessages] = useState<{ message: string, role: LLMRole, isAgent: Boolean }[]>([]);
-  const [agentRole, setAgentRole] = useState<LLMRole>("qa");
+
+  const [messages, setMessages] = useState<{ message: string, role: LLMRole | null, isAgent: Boolean }[]>([]);
+
   const [currentMessage, setCurrentMessage] = useState("");
+
   const scrollRef = useRef<ScrollView>(null);
+
   const [loading, setLoading] = useState(false)
 
   const onSendMessage = async () => {
     if (!currentMessage.trim()) return;
-    const textToSend = currentMessage;
-    setCurrentMessage("")
-    setLoading(true)
-    setMessages(prev => [...prev, { message: textToSend, role: agentRole, isAgent: false }]);
 
-    askAI(textToSend, agentRole).then((res) => {
-      setMessages(prev => [...prev, { message: res, role: agentRole, isAgent: true }]);
-    }).finally(() => setLoading(false))
+    const textToSend = currentMessage;
+
+    setCurrentMessage("")
+
+    setLoading(true)
+
+    setMessages(prev => [...prev, { message: textToSend, role: null, isAgent: false }]);
+
+    askAI(textToSend)
+      .then((res) => {
+        setMessages(prev => [...prev, { message: res.answer, role: res.role, isAgent: true }]);
+      })
+      .finally(() => setLoading(false))
   }
 
   return (
     <SafeAreaView
+      edges={{bottom : "off", top : "additive", left : "additive"}}
       style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -52,18 +62,18 @@ const AssistantScreen = () => {
         <View style={styles.headerSection}>
           <Text style={styles.title}>Assistant IA</Text>
           <View style={{
-            backgroundColor : "#FFF3E0",
-            padding : 10,
-            borderRadius : 10,
+            backgroundColor: "#FFF3E0",
+            padding: 10,
+            borderRadius: 10,
             borderWidth: 1,
-            borderColor : colors.accent.orange,
+            borderColor: colors.accent.orange,
           }}>
             <Text
-            style={{
-              color : "#E65100",
-              fontWeight : "600",
-              textAlign : "left"
-            }}>Ne soumettez pas de données personnelles ou sensibles.</Text>
+              style={{
+                color: "#E65100",
+                fontWeight: "600",
+                textAlign: "left"
+              }}>Ne soumettez pas de données personnelles ou sensibles.</Text>
           </View>
         </View>
 
@@ -89,7 +99,7 @@ const AssistantScreen = () => {
             messages.map((m, index) =>
               m.isAgent ? (
                 m.role == "search" ? <SearchResponse key={index} agentResponse={m.message} /> :
-                  m.role == "recommend" ? <RecommendResponse agentResponse={m.message} /> :
+                  m.role == "recommend" ? <RecommendResponse key={index} agentResponse={m.message} /> :
                     m.role == "plan" ? <WeeklySchedule key={index} data={m.message} /> :
                       <Markdown
                         style={MarkdownStyles}
@@ -105,7 +115,11 @@ const AssistantScreen = () => {
         </ScrollView>
 
         {/* Input */}
-        <AssistantInput currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSendMessage={onSendMessage} setAgentRole={setAgentRole} agentRole={agentRole} />
+        <AssistantInput
+          currentMessage={currentMessage}
+          setCurrentMessage={setCurrentMessage}
+          onSendMessage={onSendMessage}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView >
   )
@@ -129,7 +143,6 @@ export const styles = StyleSheet.create({
     gap: 20,
     backgroundColor: "white",
     paddingHorizontal: 24,
-    paddingBottom: 60
   },
 
   keyboardContainer: {
@@ -138,7 +151,7 @@ export const styles = StyleSheet.create({
 
   headerSection: {
     marginTop: 24,
-    gap : 5
+    gap: 5
   },
 
   title: {

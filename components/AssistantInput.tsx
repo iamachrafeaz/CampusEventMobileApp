@@ -1,16 +1,17 @@
 import { colors } from "@/constants/theme";
-import { ListChecks, MessageCircle, MoreVertical, Search, Send, Star } from 'lucide-react-native';
+import { ListChecks, MessageCircle, Search, Send, Star } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Platform,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 
-const AssistantInput = ({ currentMessage, setCurrentMessage, onSendMessage, setAgentRole, agentRole }) => {
+const AssistantInput = (
+  { currentMessage, setCurrentMessage, onSendMessage }:
+    { currentMessage: string, setCurrentMessage: (val: string) => void, onSendMessage : () => void }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const roles = [
@@ -22,46 +23,19 @@ const AssistantInput = ({ currentMessage, setCurrentMessage, onSendMessage, setA
 
   return (
     <View style={styles.outerContainer}>
-      {/* Role Picker Menu */}
-      {showMenu && (
-        <View style={styles.menuCard}>
-          {roles.map((role) => (
-            <TouchableOpacity 
-              key={role.value} 
-              style={[styles.menuItem, agentRole === role.value && styles.activeMenuItem]}
-              onPress={() => {
-                setAgentRole(role.value);
-                setShowMenu(false);
-              }}
-            >
-              {role.icon}
-              <Text style={styles.menuText}>{role.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-
       <View style={styles.inputWrapper}>
-        {/* Dots Menu Button */}
-        <TouchableOpacity 
-          style={styles.iconButton} 
-          onPress={() => setShowMenu(!showMenu)}
-        >
-          <MoreVertical color={colors.text.secondary} size={20} />
-        </TouchableOpacity>
-
         <TextInput
           style={styles.textInput}
           value={currentMessage}
           onChangeText={setCurrentMessage}
-          placeholder={`Ask ${agentRole}...`}
+          placeholder={`Posez une question...`}
           placeholderTextColor="#999"
           multiline={false}
         />
 
         {/* Send Button Inside */}
-        <TouchableOpacity 
-          style={[styles.sendButton, !currentMessage.trim() && styles.disabledSend]} 
+        <TouchableOpacity
+          style={[styles.sendButton, !currentMessage.trim() && styles.disabledSend]}
           onPress={onSendMessage}
           disabled={!currentMessage.trim()}
         >

@@ -86,7 +86,7 @@ const StudentHomeScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}   edges={{bottom : "off", top : "additive"}}>
         <View style={styles.headerSection}>
           <View style={styles.headerRow}>
             <Text style={styles.title}>Événements</Text>
@@ -232,7 +232,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     gap: 20,
-    paddingBottom: 55,
     backgroundColor: "white",
     paddingHorizontal: 24,
   },

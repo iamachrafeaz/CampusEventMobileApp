@@ -12,28 +12,7 @@ export default function StudentLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          position: "absolute",
-          bottom: 20,
-          marginHorizontal: 20,
-          borderRadius: 25,
-          backgroundColor: "#ffffff",
-          borderTopWidth: 0,
-          elevation: 10,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
-          height: 70,
-          paddingBottom: 12,
-          paddingTop: 8,
-        },
-        tabBarActiveTintColor: "#6366f1",
-        tabBarInactiveTintColor: "#9ca3af",
-        tabBarLabelStyle: {
-          fontWeight: "600",
-        },
+        headerShown: false
       }}
     >
       <Tabs.Screen

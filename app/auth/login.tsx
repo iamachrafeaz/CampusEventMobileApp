@@ -42,7 +42,6 @@ export default function LoginScreen() {
 
   const [form, setForm] = useState<LoginForm>(INITIAL_FORM);
 
-
   const setField = (field: "email" | "password", value: string) => {
     setForm(prev => ({
       ...prev,
@@ -80,7 +79,7 @@ export default function LoginScreen() {
 
     if (!form.userType || !validate()) return
 
-    const result = loginService(form.email.value, form.password.value, form.userType);
+    const result = loginService(form.email.value.toLocaleLowerCase(), form.password.value, form.userType);
 
     if (result.success) {
       login(form.userType, form.email.value);

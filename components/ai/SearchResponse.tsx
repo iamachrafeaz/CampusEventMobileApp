@@ -1,36 +1,66 @@
+import { AIResponseSearch } from '@/types/AIResponses';
+import { CalendarEvent } from '@/types/EventCalendar';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import EventCompactCard from '../EventCompactCard';
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  justification: string;
-}
+const isValidEvent = (event: any): event is CalendarEvent => {
+  return (
+    typeof event === 'object' &&
+    event !== null &&
+    typeof event.id === 'string' &&
+    typeof event.title === 'string' &&
+    typeof event.date === 'string' &&
+    typeof event.time === 'string' &&
+    typeof event.location === 'string' &&
+    typeof event.justification === 'string'
+  );
+};
 
-interface AIError {
-  error: string;
-}
+const isValidResponse = (data: any): data is AIResponseSearch => {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    typeof data.opening === 'string' &&
+    typeof data.closing === 'string' &&
+    Array.isArray(data.content) &&
+    data.content.every(isValidEvent)
+  );
+};
 
-const SearchResponse  = ({ agentResponse }: { agentResponse: string }) => {
+
+const SearchResponse = ({ agentResponse }: { agentResponse: string }) => {
   const result = useMemo(() => {
     try {
       const parsed = JSON.parse(agentResponse);
 
-      if (parsed && typeof parsed === 'object' && 'error' in parsed) {
-        return { type: 'error', data: parsed.error };
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        'error' in parsed
+      ) {
+        return {
+          type: 'error' as const,
+          data: parsed.error,
+        };
       }
 
-      if (Array.isArray(parsed)) {
-        return { type: 'events', data: parsed as CalendarEvent[] };
+      if (isValidResponse(parsed)) {
+        return {
+          type: 'events' as const,
+          data: parsed,
+        };
       }
 
-      return { type: 'error', data: 'Unexpected response format' };
+      return {
+        type: 'error' as const,
+        data: 'Unexpected response format',
+      };
     } catch (e) {
-      return { type: 'error', data: 'Failed to parse agent response' };
+      return {
+        type: 'error' as const,
+        data: 'Failed to parse agent response',
+      };
     }
   }, [agentResponse]);
 
@@ -43,9 +73,24 @@ const SearchResponse  = ({ agentResponse }: { agentResponse: string }) => {
   }
 
   return (
+
     <View style={styles.container}>
-      {result.data.map((e: CalendarEvent, index : number) => <EventCompactCard key={index} event={e} />)}
-    </View>)
+      <Text style={styles.message}>
+        {result.data.opening}
+      </Text>
+
+      {result.data.content.map((event, index) => (
+        <EventCompactCard
+          key={index}
+          event={event}
+        />
+      ))}
+
+      <Text style={styles.message}>
+        {result.data.closing}
+      </Text>
+    </View>
+  )
 };
 
 const styles = StyleSheet.create({
@@ -74,77 +119,17 @@ const styles = StyleSheet.create({
     borderColor: '#FCA5A5', // Soft red border
     backgroundColor: '#FEF2F2', // Very light red background
   },
-  errorHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  errorIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  errorTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#991B1B', // Dark red
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
   errorText: {
     fontSize: 14,
     color: '#B91C1C',
     lineHeight: 20,
   },
-  // --- Standard Card Styles ---
-  title: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 6,
-  },
-  metaRow: {
-    marginBottom: 12,
-  },
-  dateTime: {
+
+
+  message: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#4F46E5',
-    marginBottom: 4,
-  },
-  location: {
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  justificationBox: {
-    backgroundColor: '#F3F4F6',
-    padding: 12,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4F46E5',
-  },
-  justificationText: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: '#4B5563',
-    fontStyle: 'italic',
-  },
-  button: {
-    marginTop: 16,
-    backgroundColor: '#F9FAFB',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  buttonPressed: {
-    opacity: 0.7,
-    backgroundColor: '#E5E7EB',
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#4F46E5',
+    lineHeight: 22,
+    color: '#374151',
   },
 });
 
