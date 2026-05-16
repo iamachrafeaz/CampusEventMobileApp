@@ -1,8 +1,9 @@
 # Rapport de Projet — CampusEvents AI
 
 ---
-
-![App Icon](./screenshots/icon.png)
+<p align="center">
+  <img src="./screenshots/icon.png" alt="App Icon" width="200"/>
+</p>
 ---
 
 ## Table des matières
