@@ -4,7 +4,11 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function AdminLayout() {
-  const { isLoggedIn, userType } = useAuthStore();
+  const { isLoggedIn, userType, isAuthReady } = useAuthStore();
+
+  if (!isAuthReady) {
+    return null;
+  }
 
   if (!isLoggedIn || userType !== "ADMIN") {
     return <Redirect href="/auth/login" />;

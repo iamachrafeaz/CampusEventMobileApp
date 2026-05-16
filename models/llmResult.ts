@@ -1,9 +1,10 @@
-export type LLMResultType = 'search' | 'recommendation' | 'planning' | 'qa'
+import { LLMRole } from "@/types/LLMRole";
+
 export interface LLMResult {
   id: string;
   eventId?: string | null;
   userId: string;
-  type: LLMResultType;
+  type: LLMRole;
   inputText: string;
   outputText: string;
   createdAt: string;

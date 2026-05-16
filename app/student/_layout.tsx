@@ -3,7 +3,11 @@ import { Redirect, Tabs } from "expo-router";
 import { BotMessageSquare, CircleUser, Home, PenLine, Star } from "lucide-react-native";
 
 export default function StudentLayout() {
-  const { isLoggedIn, userType } = useAuthStore();
+  const { isLoggedIn, userType, isAuthReady } = useAuthStore();
+
+  if (!isAuthReady) {
+    return null;
+  }
 
   if (!isLoggedIn || userType !== "STUDENT") {
     return <Redirect href="/auth/login" />;

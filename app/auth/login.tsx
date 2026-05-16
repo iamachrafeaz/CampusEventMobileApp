@@ -9,7 +9,7 @@ import { useProfileStore } from '@/store/useProfile';
 import { UserType } from '@/types/UserType';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -30,7 +30,7 @@ const INITIAL_FORM: LoginForm = {
 export default function LoginScreen() {
   const router = useRouter();
 
-  const login = useAuthStore((s) => s.login);
+  const { login, isLoggedIn, userType } = useAuthStore();
 
   const setProfile = useProfileStore((s) => s.setProfile)
 
@@ -76,7 +76,7 @@ export default function LoginScreen() {
     const result = loginService(form.email.value.toLocaleLowerCase(), form.password.value, form.userType);
 
     if (result.success) {
-      login(form.userType, form.email.value);
+      await login(form.userType, form.email.value);
 
       if (form.userType === "ADMIN") {
         router.replace("/admin/home");
@@ -84,7 +84,6 @@ export default function LoginScreen() {
         const value = await AsyncStorage.getItem('profile');
         if (value !== null) {
           setProfile(JSON.parse(value))
-          console.log(value)
         }
         router.replace("/student/home");
       }
@@ -100,6 +99,16 @@ export default function LoginScreen() {
       }
     };
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      if (userType === "ADMIN") {
+        router.replace("/admin/home");
+      } else {
+        router.replace("/student/home");
+      }
+    }
+  }, [isLoggedIn, userType]);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -1,6 +1,8 @@
 import { getActiveEvents, getFavoriteEvents } from "@/database/events";
+import { createLLMResult, getLLMResultByQuestion } from "@/database/llmResults";
 import { getMyRegistrations } from "@/database/registrations";
 import { Event } from "@/models/event";
+import { LLMResult } from "@/models/llmResult";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LLMRole } from "@/types/LLMRole";
 import Groq from "groq-sdk";
@@ -104,15 +106,40 @@ const callLlm = async (system: string, user: string): Promise<string> => {
     return content;
 }
 
-export const askAI = async (question: string): Promise<{ role: LLMRole, answer: string }> => {
-    try {
-        const classification_string = await callLlm(basePrompt(), question);
+const saveChatResult = async (
+    userId: string,
+    role: LLMRole,
+    question: string,
+    answer: string,
+    eventId?: string | null
+) => {
+    return createLLMResult(userId, role, question, answer, eventId);
+};
 
+export const askAI = async (question: string, eventId?: string | null): Promise<{ role: LLMRole, answer: string }> => {
+    try {
+        const currentUser = useAuthStore.getState().user;
+
+        if (currentUser) {
+            const cachedResult = await getLLMResultByQuestion(currentUser, question, eventId) as LLMResult;
+            if (cachedResult) {
+                return {
+                    role: cachedResult.type as LLMRole,
+                    answer: cachedResult.outputText,
+                };
+            }
+        }
+
+        const classification_string = await callLlm(basePrompt(), question);
         const classification: { type: LLMRole } = JSON.parse(classification_string)
 
         const { system, user } = await buildPrompt(question, classification.type);
 
         const answer = await callLlm(system, user);
+
+        if (currentUser) {
+            await saveChatResult(currentUser, classification.type, question, answer, eventId);
+        }
       
         return { role: classification.type, answer: answer };
         

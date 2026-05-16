@@ -6,6 +6,7 @@ import { typography } from '@/constants/typography'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useProfileStore } from '@/store/useProfile'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useRouter } from 'expo-router'
 import { LogOut } from 'lucide-react-native'
 import React, { useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native'
@@ -13,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 
 const ProfileScreen = () => {
+  const router = useRouter();
   const { logout } = useAuthStore();
   const { profile } = useProfileStore();
 
@@ -26,8 +28,9 @@ const ProfileScreen = () => {
 
   const [isFormDisabled, setIsFormDisabled] = useState(false)
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/auth/login');
   };
 
   const validateProfile = () => {
