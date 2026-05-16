@@ -2,6 +2,9 @@
 
 ---
 
+![App Icon](./screenshots/icon.png)
+---
+
 ## Table des matières
 
 1. [Introduction & Contexte](#1-introduction--contexte)
@@ -107,6 +110,8 @@ La session est persistée via **AsyncStorage** : à la réouverture de l'applica
 
 > **Note architecturale :** Les deux profils (Admin et Étudiant) partagent la même base de données SQLite sur le même appareil. C'est une contrainte inhérente à une architecture 100 % locale, acceptable dans le cadre d'une démo sans backend.
 
+![Interface Authentification](./screenshots/Auth%20Screens.png)
+
 ---
 
 ## 4. Base de Données SQLite
@@ -119,7 +124,7 @@ La session est persistée via **AsyncStorage** : à la réouverture de l'applica
 
 La base `campusevents.db` est initialisée au premier lancement par la fonction `initDatabase()` dans `database/init.ts`. Elle contient quatre tables :
 
-[Schéma de la base](./screenshots/Class%20Diagram.png)
+![Schéma de la base](./screenshots/Class%20Diagram.png)
 
 ### Seed de données
 
@@ -153,7 +158,7 @@ Un bouton **Exporter** (fonctionnalité bonus) permet de sérialiser le catalogu
 
 Le sélecteur de date/heure utilise un composant modal personnalisé (`DateTimeModal`) intégrant `@react-native-community/datetimepicker`. L'identifiant de l'événement est généré localement via `expo-crypto` (`Crypto.randomUUID()`).
 
-[Interface Administrateur](./screenshots/Admin%20Screens.png)
+![Interface Administrateur](./screenshots/Admin%20Screens.png)
 
 ---
 
@@ -189,7 +194,7 @@ Des **chips de filtrage** permettent de filtrer par catégorie (Talk, Workshop, 
 
 `student/profile.tsx` permet à l'étudiant de renseigner sa filière, son année et ses centres d'intérêt, ces informations étant persistées via AsyncStorage et utilisées pour enrichir les recommandations de l'assistant IA.
 
-[Interface Étudiant](./screenshots/Student%20Screens.png)
+![Interface Étudiant](./screenshots/Student%20Screens.png)
 
 ---
 
@@ -201,7 +206,7 @@ L'assistant IA est accessible depuis l'onglet dédié `student/assistant.tsx`. I
 
 Un **classificateur d'intention** (prompt `base.prompt.ts`) analyse d'abord chaque message utilisateur et le catégorise en l'un des quatre types : `search`, `recommend`, `plan` ou `qa`. Ce résultat détermine quel prompt spécialisé est invoqué ensuite avec les données contextuelles extraites de SQLite.
 
-[Architecture de l'assistant](./screenshots/Assistant%20Flow.png)
+![Architecture de l'assistant](./screenshots/Assistant%20Flow.png)
 
 **Une seule requête IA à la fois** : le bouton d'envoi est désactivé pendant le chargement, et un indicateur animé (`TextShimmer`) signale l'attente.
 
