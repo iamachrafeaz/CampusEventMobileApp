@@ -11,8 +11,8 @@ import { SelectedCategory, SelectedOrder, SelectedPeriod } from '@/types/EventFi
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useRouter } from 'expo-router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const StudentHomeScreen = () => {
@@ -86,7 +86,7 @@ const StudentHomeScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}   edges={{bottom : "off", top : "additive"}}>
+      <SafeAreaView style={styles.container} edges={{ bottom: "off", top: "additive" }}>
         <View style={styles.headerSection}>
           <View style={styles.headerRow}>
             <Text style={styles.title}>Événements</Text>
@@ -130,14 +130,18 @@ const StudentHomeScreen = () => {
         enablePanDownToClose
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
-        containerStyle={styles.bottomSheetShadow} 
+        containerStyle={styles.bottomSheetShadow}
       >
         <BottomSheetScrollView contentContainerStyle={styles.bottomSheetContent}>
           <Text style={styles.bottomSheetTitle}>Filtres</Text>
 
           <View style={styles.filterGroup}>
             <Text style={styles.label}>Catégories</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
+            <ScrollView
+              horizontal
+              directionalLockEnabled
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chipsRow}>
               {Object.entries(CATEGORY_OPTIONS).map(([value, label]) => (
                 <RadioButton
                   key={value}
@@ -151,7 +155,7 @@ const StudentHomeScreen = () => {
 
           <View style={styles.filterGroup}>
             <Text style={styles.label}>Période</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
+            <ScrollView horizontal directionalLockEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
               {Object.entries(PERIOD_OPTIONS).map(([value, label]) => (
                 <RadioButton
                   key={value}
@@ -165,7 +169,7 @@ const StudentHomeScreen = () => {
 
           <View style={styles.filterGroup}>
             <Text style={styles.label}>Ordre</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
+            <ScrollView horizontal directionalLockEnabled showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipsRow}>
               {Object.entries(ORDER_OPTIONS).map(([value, label]) => (
                 <RadioButton
                   key={value}
@@ -292,12 +296,12 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
   },
   bottomSheetShadow: {
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: -4 },
-  shadowOpacity: 0.1,
-  shadowRadius: 10,
-  elevation: 20,
-},
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 20,
+  },
 })
 
 export default StudentHomeScreen

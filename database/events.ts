@@ -154,11 +154,6 @@ export const updateEvent = async (event: Event) => {
   );
 };
 
-export const updateEventNotification = async (event: Event, notificationId: string | null) => {
-  await db.runAsync(`
-    UPDATE events SET notificationId = ? WHERE id = ?
-    `, [notificationId, event.id])
-}
 
 export const updateRegisteredCount = (eventId: string, isIncrement: boolean) => {
   return db.runAsync(

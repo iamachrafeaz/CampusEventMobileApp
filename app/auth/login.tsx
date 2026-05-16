@@ -22,9 +22,9 @@ type LoginForm = {
 };
 
 // const INITIAL_FORM: LoginForm = {
-//   userType: "ADMIN",
-//   email: { value: "admin@campus.ma", error: null },
-//   password: { value: "admin123", error: null },
+//   userType: "STUDENT",
+//   email: { value: "etudiant@campus.ma", error: null },
+//   password: { value: "etudiant123", error: null },
 // };
 
 const INITIAL_FORM: LoginForm = {

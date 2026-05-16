@@ -1,7 +1,6 @@
-import { notificationService } from '@/services/notificationService';
 import { EventCategory } from '@/types/EventCategory';
 import { db } from './db';
-import { createEvent, updateEventNotification } from './events';
+import { createEvent } from './events';
 
 const events = [
   {
@@ -220,7 +219,6 @@ export async function initDatabase() {
       imageUrl TEXT,
       tags TEXT,
       createdAt TEXT NOT NULL,
-      notificationId TEXT
     );
 
     CREATE TABLE IF NOT EXISTS registrations (
@@ -259,15 +257,7 @@ export async function initDatabase() {
 }
 const seedDatabase = async () => {
   for (const event of events) {
-    const savedEvent = await createEvent(event);
-
-    const notificationId =
-      await notificationService.scheduleEventNotification(event);
-
-    await updateEventNotification(
-      { ...event, id: savedEvent.lastInsertRowId.toString() },
-      notificationId
-    );
+    await createEvent(event);
   }
 };
 

@@ -21,7 +21,7 @@ export const eventService = {
 
   getById: async (id: string, userId: string | null = null) => {
     let event: Event;
-    
+
     if (userId) {
       event = await repo.getEventByIdWithFavorite(id, userId) as Event
     } else {
@@ -130,7 +130,9 @@ export const eventService = {
     return await repo.updateEvent(updatedEvent);
   },
 
-  delete: (id: string) => repo.deleteEvent(id),
+  delete: async (id: string) => {
+    await repo.deleteEvent(id)
+  },
 
   exportEvents: async () => {
     try {
