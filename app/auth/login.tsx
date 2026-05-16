@@ -21,12 +21,6 @@ type LoginForm = {
   password: FieldState;
 };
 
-// const INITIAL_FORM: LoginForm = {
-//   userType: "STUDENT",
-//   email: { value: "etudiant@campus.ma", error: null },
-//   password: { value: "etudiant123", error: null },
-// };
-
 const INITIAL_FORM: LoginForm = {
   userType: "STUDENT",
   email: { value: "", error: null },

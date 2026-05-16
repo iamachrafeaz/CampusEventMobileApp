@@ -1,50 +1,97 @@
-# Welcome to your Expo app 👋
+# CampusEvents
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+CampusEvents is a mobile-first event management application built with Expo and React Native using TypeScript. It helps students and campus staff browse, register, and manage campus events while also providing administrator tools for event creation and tracking.
 
-## Get started
+## 🚀 Project Overview
 
-1. Install dependencies
+CampusEvents is designed for campus communities to discover events, save favorites, and manage registrations. It supports two main user roles:
 
-   ```bash
-   npm install
-   ```
+- **Student**: Browse events, search, favorite, register, and review personal registrations.
+- **Assistant / Admin**: Create and manage campus events with a guided event form.
 
-2. Start the app
+The app also integrates AI-powered assistant features for improved search, recommendations, and event planning.
 
-   ```bash
-   npx expo start
-   ```
+## 📱 Key Features
 
-In the output, you'll find options to open the app in a
+- Event browsing with category filtering and search
+- Detailed event pages with registration status
+- Favorite events management
+- Student profile and registration history
+- Admin event creation and editing flow
+- AI-powered assistant for planning and recommendations
+- Responsive Expo app structure with custom UI components
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧱 Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- `app/` — main route layout, screens and nested route groups for admin, auth, events, and student flows
+- `components/` — reusable UI and domain components used across screens
+- `config/` — shared configuration such as toast settings
+- `constants/` — app constants, theme settings, categories, and prompts
+- `database/` — in-app database helpers for events, registrations, favorites, and initialization
+- `hooks/` — custom hooks for event loading, favorites, and registration actions
+- `models/` — TypeScript models for domain entities
+- `services/` — application services for events, login, favorites, registrations and assistant integration
+- `store/` — global state stores using Zustand
+- `types/` — shared TypeScript types and enums
+- `utils/` — utility helpers such as time formatting
 
-## Get a fresh project
+## 🧩 Screens & Flows
 
-When you're ready, run:
+### Authentication
+
+- `app/auth/login.tsx` — user login flow and authentication state management
+
+### Student Experience
+
+- `app/student/home.tsx` — main student dashboard
+- `app/student/favorites.tsx` — saved events list
+- `app/student/registrations.tsx` — registered events and attendance tracking
+- `app/student/profile.tsx` — student profile details
+
+### Admin / Assistant Experience
+
+- `app/admin/home.tsx` — admin dashboard for event management
+- `app/admin/eventFormScreen.tsx` — create or edit events with validation and form controls
+
+### Event Details
+
+- `app/events/[id].tsx` — event detail screen with registration actions and event metadata
+
+## ⚙️ Installation
 
 ```bash
-npm run reset-project
+cd CampusEvents
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## ▶️ Running the App
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Then open the app in Expo Go on a device or emulator.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 🛠️ Development Notes
 
-## Join the community
+- The app is built with `expo` and `react-native`.
+- State management uses `zustand` stores under `store/`.
+- UI components are organized in `components/ui/` for consistent design.
+- AI assistant prompts and response components are under `constants/prompts` and `components/ai/`.
 
-Join our community of developers creating universal apps.
+## 📁 Important Files
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `package.json` — dependencies and scripts
+- `tsconfig.json` — TypeScript settings
+- `app/_layout.tsx` — root layout and app navigation
+- `app/admin/_layout.tsx` — admin route layout
+- `app/student/_layout.tsx` — student route layout
+- `database/init.ts` — initial database seeding
+
+## 🖼️ Screenshots
+
+> Add screenshots of the app here.
+
+- `![Home Screen](./screenshots/home.png)`
+- `![Event Detail](./screenshots/event-detail.png)`
+- `![Admin Event Form](./screenshots/admin-event-form.png)`

@@ -218,7 +218,7 @@ export async function initDatabase() {
       registeredCount INTEGER DEFAULT 0,
       imageUrl TEXT,
       tags TEXT,
-      createdAt TEXT NOT NULL,
+      createdAt TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS registrations (

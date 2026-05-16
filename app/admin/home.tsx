@@ -67,7 +67,7 @@ export default function EventList() {
       fetchEvents(null);
     }, [])
   );
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <LoadingModal text={'Exportation en cours...'} isVisible={isExporting} />
